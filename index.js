@@ -28,7 +28,12 @@ async function run() {
     try {
         //Collection
         const assignmentCollection = client.db('assignmentDB').collection('assignment');
+        const submitedCollection = client.db('assignmentDB').collection('submited');
 
+
+        //------------
+           //POST
+        //------------   
         //Post assignments
         app.post('/assignments', async (req, res) => {
             const userAssignment = req.body;
@@ -38,9 +43,29 @@ async function run() {
             res.send(result)
         })
 
+        //Post submition
+        app.post('/submited', async (req, res) => {
+            const submitedAssignment = req.body;
+            console.log(submitedAssignment);
+
+            const result = await submitedCollection.insertOne(submitedAssignment);
+            res.send(result)
+        })
+
+
+        //------------
+           //GET
+        //------------  
+
         //Get assignment
         app.get('/assignments', async (req, res) => {
             const result = await assignmentCollection.find().toArray();
+            res.send(result);
+        })
+
+        //Get submision
+        app.get('/submited', async (req, res) => {
+            const result = await submitedCollection.find().toArray();
             res.send(result);
         })
 
