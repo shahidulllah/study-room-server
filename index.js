@@ -44,6 +44,36 @@ async function run() {
             res.send(result);
         })
 
+        //Get assignment by Id
+        app.get('/assignments/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await assignmentCollection.findOne(query);
+            res.send(result);
+        })
+
+        // Update Assignment
+        app.put('/assignments/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updatedAssignment = req.body;
+            const assignment = {
+                $set: {
+                    title: updatedAssignment.title,
+                    thumbnailImageURL: updatedAssignment.thumbnailImageURL,
+                    description: updatedAssignment.description,
+                    ddifficultyLevel: updatedAssignment.ddifficultyLevel,
+                    marks: updatedAssignment.marks,
+                    dueDate: updatedAssignment.dueDate,
+                    
+                }
+            }
+
+            const result = await assignmentCollection.updateOne(filter, assignment, options);
+            res.send(result);
+        })
+
         //Delete document
         app.delete('/assignments/:id', async (req, res) => {
             const id = req.params.id;
