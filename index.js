@@ -29,10 +29,11 @@ async function run() {
         //Collection
         const assignmentCollection = client.db('assignmentDB').collection('assignment');
         const submitedCollection = client.db('assignmentDB').collection('submited');
+        const giveMarkCollection = client.db('assignmentDB').collection('mark');
 
 
         //------------
-           //POST
+        //POST
         //------------   
         //Post assignments
         app.post('/assignments', async (req, res) => {
@@ -43,6 +44,22 @@ async function run() {
             res.send(result)
         })
 
+        //Get assignments
+        app.get('/assignments', async (req, res) => {
+            const result = await assignmentCollection.find().toArray();
+            res.send(result);
+        })
+
+        //Get assignments by Id
+        app.get('/assignments/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await assignmentCollection.findOne(query);
+            res.send(result);
+        })
+
+
+
         //Post submition
         app.post('/submited', async (req, res) => {
             const submitedAssignment = req.body;
@@ -52,28 +69,33 @@ async function run() {
             res.send(result)
         })
 
-
-        //------------
-           //GET
-        //------------  
-
-        //Get assignment
-        app.get('/assignments', async (req, res) => {
-            const result = await assignmentCollection.find().toArray();
-            res.send(result);
-        })
-
         //Get submision
         app.get('/submited', async (req, res) => {
             const result = await submitedCollection.find().toArray();
             res.send(result);
         })
 
-        //Get assignment by Id
-        app.get('/assignments/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await assignmentCollection.findOne(query);
+        //Get submission specific user
+        app.get('/submited/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { userEmail: email }
+            const result = await submitedCollection.find(query).toArray();
+            res.send(result);
+        })
+
+
+        //Post Mark & feedback
+        app.post('/marks', async (req, res) => {
+            const giveMarks = req.body;
+            console.log(giveMarks);
+
+            const result = await giveMarkCollection.insertOne(giveMarks);
+            res.send(result)
+        })
+
+        //Get  Mark & feedback
+        app.get('/marks', async (req, res) => {
+            const result = await giveMarkCollection.find().toArray();
             res.send(result);
         })
 
@@ -91,7 +113,7 @@ async function run() {
                     ddifficultyLevel: updatedAssignment.ddifficultyLevel,
                     marks: updatedAssignment.marks,
                     dueDate: updatedAssignment.dueDate,
-                    
+
                 }
             }
 
