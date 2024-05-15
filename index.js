@@ -7,7 +7,16 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(
+    cors({
+      origin: [
+        "http://localhost:5000",
+        "https://ass11-study-room.web.app",
+        "https://ass11-study-room.firebaseapp.com",
+      ],
+      credentials: true,
+    })
+  );
 app.use(express.json());
 
 
