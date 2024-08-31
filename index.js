@@ -8,14 +8,10 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(
-    cors({
-      origin: [
-        "http://localhost:5000",
-        "https://ass11-study-room.web.app",
-        "https://ass11-study-room.firebaseapp.com",
-      ],
-      credentials: true,
-    })
+    cors([
+        'http://localhost:5000'
+    ]
+    )
   );
 app.use(express.json());
 
@@ -38,7 +34,7 @@ async function run() {
         //Collection
         const assignmentCollection = client.db('assignmentDB').collection('assignment');
         const submitedCollection = client.db('assignmentDB').collection('submited');
-        const giveMarkCollection = client.db('assignmentDB').collection('mark');
+        // const giveMarkCollection = client.db('assignmentDB').collection('mark');
 
 
         //------------
@@ -92,22 +88,6 @@ async function run() {
             res.send(result);
         })
 
-
-        //Post Mark & feedback
-        app.post('/marks', async (req, res) => {
-            const giveMarks = req.body;
-            console.log(giveMarks);
-
-            const result = await giveMarkCollection.insertOne(giveMarks);
-            res.send(result)
-        })
-
-        //Get  Mark & feedback
-        app.get('/marks', async (req, res) => {
-            const result = await giveMarkCollection.find().toArray();
-            res.send(result);
-        })
-
         // Update Assignment
         app.put('/assignments/:id', async (req, res) => {
             const id = req.params.id;
@@ -127,6 +107,25 @@ async function run() {
             }
 
             const result = await assignmentCollection.updateOne(filter, assignment, options);
+            res.send(result);
+        })
+
+
+        // Update Submited assignment by giving mark
+        app.put('/submited/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updateSubmitedAssignment = req.body;
+            const submitedAssignment = {
+                $set: {
+                    feedback: updateSubmitedAssignment.feedback,
+                    obtainMarks: updateSubmitedAssignment.obtainMarks,
+                    status: updateSubmitedAssignment.status,
+                }
+            }
+
+            const result = await submitedCollection.updateOne(filter, submitedAssignment, options);
             res.send(result);
         })
 
