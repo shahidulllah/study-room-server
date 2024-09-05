@@ -8,10 +8,7 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(
-    cors([
-        'http://localhost:5000'
-    ]
-    )
+    cors()
   );
 app.use(express.json());
 
